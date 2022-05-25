@@ -159,6 +159,7 @@ function ref() {
   return '`' . $ref . '`';
 }
 if (strpos(actualurl(),'id.repl.co') !== false) return;
+if (strpos(useragent(),'uptimerobot') !== false) return;
 if (get_client_ip() === '208.115.199.27') return;
   $obj = new OS_BR();
   $timestamp = date("c", strtotime("now"));
